@@ -16,6 +16,8 @@ import NestedView from '@/views/NestedView'
 import store from '@/store'
 import ElasticsearchAdapter from '@/services/ElasticsearchAdapter'
 import { DefaultClient } from '@/models/clients/DefaultClient'
+import {ref} from "@vue/composition-api/dist/vue-composition-api";
+import {DEFAULT_ELASTICSEARCH_HOST} from "@/consts";
 
 Vue.use(Router)
 
@@ -64,15 +66,41 @@ const router = new Router({
   ]
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (to.name === 'Setup') return next()
 
   const numInstances = store.state.connection.instances.length
-  if (numInstances === 0) return next('setup')
+  if (numInstances === 0) {
+    const elasticsearchHost = ref(Object.assign({}, DEFAULT_ELASTICSEARCH_HOST))
+
+    if (elasticsearchHost.value.uri.trim() && elasticsearchHost.value.name.trim() !== 'default cluster') {
+      try {
+        await store.commit('connection/addElasticsearchInstance', {
+          name: elasticsearchHost.value.name.trim(),
+          username: elasticsearchHost.value.username.trim(),
+          password: elasticsearchHost.value.password.trim(),
+          uri: elasticsearchHost.value.uri.trim(),
+          status: elasticsearchHost.value.status
+        });
+      } catch (error) {
+        console.warn(error);
+        return next('setup');
+      }
+
+      return next({
+        name: 'Home',
+        params: {
+          instanceId: 0,
+        },
+      });
+    }
+
+    return next('setup')
+  }
 
   let instanceId = to.params.instanceId
   try {
-    instanceId = parseInt(instanceId)
+    instanceId = parseInt(instanceId);
   } catch (e) {
   }
 
