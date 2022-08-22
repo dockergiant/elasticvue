@@ -1,14 +1,14 @@
-name: Docker Image Elasticsearch
+name: Docker Image ElasticVue
 on:
   push:
     paths:
-      - images/.trigger
+      - .trigger
       - Dockerfile
       - .github/workflows/build.yml
 
 jobs:
   elasticvue:
-    name: Elasticsearch
+    name: ElasticVue
     runs-on: ubuntu-latest
 
     steps:
