@@ -14,7 +14,7 @@ RUN npm install -g yarn n; \
 
 COPY package.json .
 COPY yarn.lock .
-RUN yarn install
+RUN yarn install --network-timeout 100000
 COPY . .
 
 ENV DEFAULT_NAME 'default cluster'
