@@ -26,6 +26,7 @@ COPY nginx/elasticvue.conf /etc/nginx/conf.d/
 EXPOSE 80
 STOPSIGNAL SIGTERM
 
-CMD VUE_APP_DEFAULT_NAME=${DEFAULT_NAME} VUE_APP_DEFAULT_HOST=${DEFAULT_HOST} yarn --silent build; \
-        mv -f /usr/src/app/dist/* /usr/share/nginx/html; \
-        nginx -g "daemon off;"
+CMD nginx; \
+    VUE_APP_DEFAULT_NAME=${DEFAULT_NAME} VUE_APP_DEFAULT_HOST=${DEFAULT_HOST} yarn --silent build; \
+    mv -f /usr/src/app/dist/* /usr/share/nginx/html
+
